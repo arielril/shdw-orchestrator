@@ -35,3 +35,5 @@ class Weight {
     }
   }
 }
+
+module.exports = { Weight };

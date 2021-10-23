@@ -1,5 +1,4 @@
 const axios = require('axios');
-const R = require('ramda');
 
 const { Logger } = require('../../util/logger');
 
@@ -58,5 +57,6 @@ class CodeRunner {
       throw error;
     }
   }
-
 }
+
+module.exports = { CodeRunner };
