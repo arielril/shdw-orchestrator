@@ -32,7 +32,7 @@ const register = async (req, res, next) => {
  * @param {import('express').Response} res 
  * @param {import('express').NextFunction} next 
  */
-const executeAction = (req, res, next) => {
+const executeAction = async (req, res, next) => {
   try {
     const targetUid = R.path(['params', 'uid'], req);
 

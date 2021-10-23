@@ -94,4 +94,4 @@ class CodeRunner {
  */
 
 
-module.exports = { CodeRunner, NmapReturn };
+module.exports = { CodeRunner };

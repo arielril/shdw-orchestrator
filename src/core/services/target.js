@@ -61,11 +61,11 @@ class Target {
   async executeAction(action, target, options = {}) {
     switch (action) {
       case actions.NET_SCAN:
-        const res = await this.executeNmap(target.host, options);
-        return this.registerNmapResults(target.uid, res);
+        const nmapResult = await this.executeNmap(target.host, options);
+        return this.registerNmapResults(target.uid, nmapResult);
       case actions.WEB_PATH_DISCOVERY:
-        const res = await this.executeFfuf(target.host, options);
-        return this.registerFfufResults(target.uid, res);
+        const ffufResult = await this.executeFfuf(target.host, options);
+        return this.registerFfufResults(target.uid, ffufResult);
       default:
         throw new Error('invalid action');
     }
@@ -130,7 +130,7 @@ class Target {
       /**
        * @returns {import('../../infrastructure/repository/flowchart').AddEdgeDestination}
        */
-      (node) => {
+      async (node) => {
         const edgeWeight = await this._weightRepository
           // TODO add properties here to request weight API
           .compute({})
@@ -207,8 +207,8 @@ class Target {
       /**
        * @returns {import('../../infrastructure/repository/flowchart').AddEdgeDestination}
        */
-      (node) => {
-        const edgeWeight = this._weightRepository
+      async (node) => {
+        const edgeWeight = await this._weightRepository
           // TODO add properties here to request weight API
           .compute({})
           .catch(() => 50);
