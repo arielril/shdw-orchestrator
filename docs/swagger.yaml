@@ -5,17 +5,113 @@ info:
   version: 0.0.1
 servers:
   - url: http://localhost:5001/v1
-
+tags:
+  - name: Targets
 paths:
-  /:
-    get:
-      summary: Some
+  /targets/register:
+    post:
+      tags:
+        - Targets
+      description: Register a new target
+      summary: Register a new target
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              properties:
+                host:
+                  type: string
+                  description: IP or Hostname of the target
+                  example: example.com
+                comment:
+                  type: string
+                  description: A comment
+                  example: This is a HackTheBox machine
+      responses:
+        201:
+          description: Registered
+          content:
+            'application/json':
+              schema:
+                properties:
+                  uid:
+                    type: string
+                    description: Target uid
+                    example: 161C6007-EC3F-4BF1-9A31-E0A753D76EB5
+                  host:
+                    type: string
+                    description: IP or Hostname of the target
+                    example: example.com
+
+  /targets/{uid}:
+    put:
+      tags:
+        - Targets
+      description: Execute an action on the target
+      parameters:
+        - name: uid
+          required: true
+          in: path
+          schema: 
+            type: string
+            description: Target uid
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              properties:
+                action:
+                  description: Type of action to execute
+                  type: string
+                  enum:
+                    - NET_SCAN
+                    - WEB_PATH_DISCOVERY
+                  example: NET_SCAN
+                options:
+                  oneOf:
+                    - title: Nmap Scan - Network
+                      properties:
+                        service_version:
+                          type: boolean
+                          example: true
+                        hosts_online:
+                          type: boolean
+                          example: false
+                        port_range:
+                          type: string
+                          example: 22-443
+                        default_scripts:
+                          type: boolean
+                          example: true
+                        syn_scan:
+                          type: boolean
+                          example: false
+                        udp_scan:
+                          type: boolean
+                          example: false
+                    - title: Ffuf Scan - Web Path Discovery
+                      properties:
+                        recursion:
+                          type: boolean
+                          example: false
+                        redirect:
+                          type: boolean
+                          example: true
+                        ignore_status:
+                          type: array
+                          items:
+                            type: number
+                          example:
+                            - 403
+                            - 401
+
       responses:
         200:
-          description: OK
+          description: OK Execution
           content:
-            'application/json': 
+            'application/json':
               schema:
-                type: string
-                example: Success
-  
+                properties:
+                  data:
+                    type: object
+            

@@ -1,3 +1,5 @@
+const Target = require('./core/controller/target')
+
 class Routes {
   /**
    * @param {import('express').IRouter} router 
@@ -7,9 +9,8 @@ class Routes {
   }
 
   registerRoutes() {
-    this._router.get('/v1/', (req, res) => {
-      return res.status(200).json({ suup: true });
-    });
+    this._router.post('/v1/targets', Target.register);
+    this._router.put('/v1/targets/:uid', Target.executeAction);
   }
 }
 

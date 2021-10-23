@@ -10,12 +10,21 @@ class FlowChart {
   }
 
   /**
+   * @typedef AddNodeReturn
+   * @property {string} uid
+   * @property {string} name
+   * @property {number} port
+   * @property {string[]} tags
+   */
+
+  /**
    * 
    * @param {object} nodeData 
    * @param {string} nodeData.name
    * @param {number} nodeData.port
    * @param {string[]} nodeData.tags
    * @param {string[]} nodeData.metadata
+   * @returns {Promise<AddNodeReturn>}
    */
   async addNode(nodeData = {}) {
     const node = R.pick(['name', 'port', 'tags', 'metadata'], nodeData);
@@ -40,8 +49,8 @@ class FlowChart {
   }
 
   /**
-   * 
    * @param {string} uid 
+   * @returns {Promise<GetNodeReturn>}
    */
   async getNode(uid) {
     try {
@@ -72,16 +81,10 @@ class FlowChart {
    * @param {object} edgeData.startNode
    * @param {string?} edgeData.startNode.uid
    * @param {string?} edgeData.startNode.name
-   * @param {object[]} edgeData.destinations
-   * @param {object} edgeData.destinations.node
-   * @param {string} edgeData.destinations.node.uid
-   * @param {object} edgeData.destinations.edgeProperties
-   * @param {string} edgeData.destinations.edgeProperties.uid
-   * @param {string} edgeData.destinations.edgeProperties.label
-   * @param {number} edgeData.destinations.edgeProperties.weight
-   * @param {string[]} edgeData.destinations.edgeProperties.tags
+   * @param {AddEdgeDestination[]} edgeData.destinations
+   * @returns {Promise<AddEdgeReturn>}
    */
-  addEdge(edgeData = {}) {
+  async addEdge(edgeData = {}) {
     const edge = R.pick(
       ['startNode', 'destinations'],
       edgeData,
@@ -131,4 +134,44 @@ class FlowChart {
   }
 }
 
-module.exports = { FlowChart };
+/**
+ * @typedef AddEdgeDestination
+ * @property {object} edgeData.destinations.node
+ * @property {string} edgeData.destinations.node.uid
+ * @property {object} edgeData.destinations.edgeProperties
+ * @property {string} edgeData.destinations.edgeProperties.uid
+ * @property {string} edgeData.destinations.edgeProperties.label
+ * @property {number} edgeData.destinations.edgeProperties.weight
+ * @property {string[]} edgeData.destinations.edgeProperties.tags
+ */
+
+/**
+ * @typedef AddEdgeReturnDestinations
+ * @property {object} node
+ * @property {string} node.uid
+ * @property {string} node.name
+ * @property {object} edge
+ * @property {string} edge.uid
+ * @property {string} edge.label
+ */
+
+/**
+ * @typedef AddEdgeReturn
+ * @property {object} startNode
+ * @property {string} startNode.uid
+ * @property {string} startNode.name
+ * @property {AddEdgeReturnDestinations[]} destinations
+ */
+
+/**
+ * @typedef GetNodeReturn
+ * @property {string} uid
+ * @property {string} name
+ * @property {number} port
+ * @property {string[]} tags
+ * @property {string[]} metadata
+ */
+
+module.exports = {
+  FlowChart,
+};
