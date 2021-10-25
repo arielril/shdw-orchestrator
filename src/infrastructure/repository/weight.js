@@ -17,9 +17,10 @@ class Weight {
    * @param {string} data.destination.id
    * @param {object[]} data.edges
    * @param {string} data.edges.id
+   * @returns {ComputeReturn}
    */
   async compute(data = {}) {
-    const computeData = R.pick(['source', 'destination', 'edges']);
+    const computeData = R.pick(['source', 'destination', 'edges'], data);
 
     try {
       const resp = await axios.default.post(
@@ -35,5 +36,12 @@ class Weight {
     }
   }
 }
+
+/**
+ * @typedef ComputeReturn
+ * @property {number} result
+ */
+
+
 
 module.exports = { Weight };

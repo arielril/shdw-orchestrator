@@ -30,13 +30,13 @@ class FlowChart {
     const node = R.pick(['name', 'port', 'tags', 'metadata'], nodeData);
 
     try {
-      Logger.debug(node, 'adding new node');
+      Logger.debug({ node }, 'adding new node');
       const resp = await axios.default.post(
         `${this.baseUrl}/nodes`,
         node,
       );
       Logger.info(
-        resp.data,
+        { node: resp.data },
         'added new node',
       );
 
@@ -56,7 +56,7 @@ class FlowChart {
     try {
       const resp = await axios.default.get(`${this.baseUrl}/nodes/${uid}`);
 
-      Logger.info(resp.data, 'found node');
+      Logger.info({ node: resp.data }, 'found node');
       return resp.data;
     } catch (error) {
       Logger.error({ error, node_uid: uid }, 'failed to get node');
@@ -91,13 +91,13 @@ class FlowChart {
     );
 
     try {
-      Logger.debug(edge, 'adding new edge');
+      Logger.debug({ edge }, 'adding new edge');
       const resp = await axios.default.post(
         `${this.baseUrl}/edges`,
         edge,
       );
 
-      Logger.info(resp.data, 'added new node');
+      Logger.info({ edge: resp.data }, 'added new node');
       return resp.data;
     } catch (error) {
       const errMessage = 'failed to add new edge';
@@ -125,10 +125,10 @@ class FlowChart {
     try {
       const resp = await axios.default.get(`${this.baseUrl}/edges/${uid}`);
 
-      Logger.info(resp.data, 'found the edge');
+      Logger.info({ edge: resp.data }, 'found the edge');
       return resp.data;
     } catch (error) {
-      Logger.error({ error }, 'failed to get edge');
+      Logger.error({ error, edge_uid: uid }, 'failed to get edge');
       throw error;
     }
   }

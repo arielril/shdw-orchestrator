@@ -10,6 +10,6 @@ function logger(config) {
 
 module.exports = {
   Logger: logger({
-    PROJECT_NAME: 'flowchart-api',
+    PROJECT_NAME: 'orchestrator-api',
   }),
 };

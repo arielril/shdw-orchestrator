@@ -9,7 +9,7 @@ class Routes {
   }
 
   registerRoutes() {
-    this._router.post('/v1/targets', Target.register);
+    this._router.post('/v1/targets/register', Target.register);
     this._router.put('/v1/targets/:uid', Target.executeAction);
   }
 }

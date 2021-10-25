@@ -126,15 +126,24 @@ class Target {
 
     // create the edges that relate the source node with
     // nmap result nodes
-    const destinations = insertedNodes.map(
+    const destinations = await Promise.all(insertedNodes.map(
       /**
        * @returns {import('../../infrastructure/repository/flowchart').AddEdgeDestination}
        */
       async (node) => {
-        const edgeWeight = await this._weightRepository
-          // TODO add properties here to request weight API
-          .compute({})
-          .catch(() => 50);
+        let edgeWeight = 50;
+
+        try {
+          const computeResponse = await this._weightRepository
+            // TODO add properties here to request weight API
+            .compute({});
+
+          edgeWeight = computeResponse?.result;
+
+          Logger.debug({ edge_weight: edgeWeight }, 'computed edge weight');
+        } catch (error) {
+          Logger.error({ error }, 'failed to compute edge weight');
+        }
 
         return {
           node: R.pick(['uid'], node),
@@ -144,7 +153,7 @@ class Target {
           },
         };
       },
-    );
+    ));
 
     return this._flowchartRepository.addEdge({
       startNode: {

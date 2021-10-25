@@ -28,7 +28,7 @@ class CodeRunner {
         opts,
       );
 
-      Logger.info(resp.data, 'ran nmap');
+      Logger.info({ nmap_result: resp.data }, 'ran nmap');
       return resp.data;
     } catch (error) {
       Logger.error();
