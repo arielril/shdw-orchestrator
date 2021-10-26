@@ -17,7 +17,7 @@ class Weight {
    * @param {string} data.destination.id
    * @param {object[]} data.edges
    * @param {string} data.edges.id
-   * @returns {ComputeReturn}
+   * @returns {Promise<ComputeReturn>}
    */
   async compute(data = {}) {
     const computeData = R.pick(['source', 'destination', 'edges'], data);

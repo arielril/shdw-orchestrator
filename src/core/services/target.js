@@ -146,7 +146,7 @@ class Target {
         }
 
         return {
-          node: R.pick(['uid'], node),
+          node: R.pick(['uid', 'port'], node),
           edgeProperties: {
             label: node.port,
             weight: edgeWeight,
