@@ -52,7 +52,7 @@ paths:
         - name: uid
           required: true
           in: path
-          schema: 
+          schema:
             type: string
             description: Target uid
       requestBody:
@@ -91,6 +91,15 @@ paths:
                           example: false
                     - title: Ffuf Scan - Web Path Discovery
                       properties:
+                        start_node:
+                          type: object
+                          properties:
+                            uid:
+                              $ref: '#/components/schemas/Uid'
+                            port:
+                              type: number
+                              description: Port number. HTTP = 80; HTTPS = 445
+                              example: 445
                         recursion:
                           type: boolean
                           example: false
@@ -114,4 +123,10 @@ paths:
                 properties:
                   data:
                     type: object
-            
+
+components:
+  schemas:
+    Uid:
+      type: string
+      description: Target uid
+      example: 161C6007-EC3F-4BF1-9A31-E0A753D76EB5

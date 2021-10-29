@@ -14,6 +14,7 @@ class FlowChart {
    * @property {string} uid
    * @property {string} name
    * @property {number} port
+   * @property {number} status_code
    * @property {string[]} tags
    */
 
@@ -27,7 +28,7 @@ class FlowChart {
    * @returns {Promise<AddNodeReturn>}
    */
   async addNode(nodeData = {}) {
-    const node = R.pick(['name', 'port', 'tags', 'metadata'], nodeData);
+    const node = R.pick(['name', 'port', 'status_code', 'tags', 'metadata'], nodeData);
 
     try {
       Logger.debug({ node }, 'adding new node');

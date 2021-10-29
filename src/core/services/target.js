@@ -65,7 +65,7 @@ class Target {
         return this.registerNmapResults(target.uid, nmapResult);
       case actions.WEB_PATH_DISCOVERY:
         const ffufResult = await this.executeFfuf(target.host, options);
-        return this.registerFfufResults(target.uid, ffufResult);
+        return this.registerFfufResults(options?.start_node?.uid, ffufResult);
       default:
         throw new Error('invalid action');
     }
@@ -164,23 +164,44 @@ class Target {
   }
 
   /**
+   * 
+   * @param {string} targetHost 
+   * @param {number} port 
+   * @returns {string} formatted target url
+   */
+  _formatHost(targetHost, port) {
+    switch (port) {
+      case 80:
+        return `http://${targetHost}/FUZZ`;
+      case 443:
+        return `https://${targetHost}/FUZZ`;
+      default:
+        return `http://${targetHost}:${port}/FUZZ`;
+    }
+  }
+
+  /**
    * @param {string} target 
    * @param {FfufOptions} options 
    * @returns {Promise<import('../../infrastructure/repository/code-runner').FfufReturn>}
    */
   async executeFfuf(target, options = {}) {
+    const executeTarget = this._formatHost(
+      target,
+      R.pathOr(80, ['start_node', 'port'], options),
+    );
     return this._codeRunnerRepository.runFfuf(
-      R.assoc('target', target, options),
+      R.assoc('target', executeTarget, options),
     );
   }
 
   /**
    * 
-   * @param {string} sourceNodeUid 
+   * @param {string} targetNodeUid 
    * @param {import('../../infrastructure/repository/code-runner').FfufReturn} ffufResults 
    * @returns {import('../../infrastructure/repository/flowchart').AddEdgeReturn}
    */
-  async registerFfufResults(sourceNodeUid, ffufResults) {
+  async registerFfufResults(scanStartNodeUid, ffufResults) {
     // create the nodes with ffuf result
     const insertedNodes = await Promise.all(
       R.pipe(
@@ -191,7 +212,7 @@ class Target {
            */
           item => this._flowchartRepository.addNode({
             name: item.path,
-            port: item.status_code,
+            status_code: item.status_code,
             tags: Object.keys(item.content).map(k => `${k}=${item.content[k]}`),
           })
             .catch((error) => {
@@ -212,31 +233,40 @@ class Target {
 
     // for each ffuf result node, add an edge starting from the 
     // source node to the ffuf result node
-    const destinations = insertedNodes.map(
+    const destinations = await Promise.all(insertedNodes.map(
       /**
        * @returns {import('../../infrastructure/repository/flowchart').AddEdgeDestination}
        */
       async (node) => {
-        const edgeWeight = await this._weightRepository
-          // TODO add properties here to request weight API
-          .compute({})
-          .catch(() => 50);
+        let edgeWeight = 50;
+
+        try {
+          const computeResponse = await this._weightRepository
+            // TODO add properties here to request weight API
+            .compute({});
+
+          edgeWeight = computeResponse?.result;
+
+          Logger.debug({ edge_weight: edgeWeight }, 'computed edge weight');
+        } catch (error) {
+          Logger.error({ error }, 'failed to compute edge weight');
+        }
 
         return {
           node: R.pick(['uid'], node),
           edgeProperties: {
-            label: node.name,
+            label: node.status_code,
             // todo: request to weight API to get the value
             weight: edgeWeight,
             tags: node.tags,
           }
         };
       },
-    );
+    ));
 
     return this._flowchartRepository.addEdge({
       startNode: {
-        uid: sourceNodeUid,
+        uid: scanStartNodeUid,
       },
       destinations,
     });
@@ -255,6 +285,9 @@ class Target {
 
 /**
  * @typedef FfufOptions
+ * @property {object} start_node
+ * @property {string} start_node.uid
+ * @property {number} start_node.port
  * @property {boolean} recursion
  * @property {boolean} redirect
  * @property {number[]} ignore_status
