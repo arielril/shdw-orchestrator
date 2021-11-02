@@ -133,6 +133,17 @@ class FlowChart {
       throw error;
     }
   }
+
+  async getGraph() {
+    try {
+      const resp = await axios.default.get(`${this.baseUrl}/v1/graph`);
+      Logger.info({ graph: resp.data }, 'got graph');
+      return resp.data;
+    } catch (error) {
+      Logger.error({ error }, 'failed to get graph');
+      throw error;
+    }
+  }
 }
 
 /**

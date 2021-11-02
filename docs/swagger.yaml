@@ -7,6 +7,7 @@ servers:
   - url: http://localhost:3001/v1
 tags:
   - name: Targets
+  - name: Graph
 paths:
   /targets/register:
     post:
@@ -123,6 +124,47 @@ paths:
                 properties:
                   data:
                     type: object
+
+  /graph:
+    get:
+      tags:
+        - Graph
+      description: Get the graph from the database
+      summary: Get the graph
+      responses:
+        200:
+          description: Successful response
+          content:
+            'application/json':
+              schema:
+                properties:
+                  nodes:
+                    type: array
+                    items:
+                      properties:
+                        name:
+                          description: Node name
+                          type: string
+                        id:
+                          description: Node id
+                          type: string
+                        label:
+                          type: string
+                        tags:
+                          type: array
+                          items:
+                            type: string
+                  edges:
+                    type: array
+                    items:
+                      properties:
+                        source:
+                          type: string
+                        target:
+                          type: string
+                        label:
+                          description: Edge description
+                          type: string
 
 components:
   schemas:
