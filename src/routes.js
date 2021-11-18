@@ -1,3 +1,5 @@
+const cors = require('cors');
+
 const Target = require('./core/controller/target');
 const Graph = require('./core/controller/graph');
 
@@ -10,6 +12,8 @@ class Routes {
   }
 
   registerRoutes() {
+    this._router.use(cors());
+
     this._router.post('/v1/targets/register', Target.register);
     this._router.put('/v1/targets/:uid', Target.executeAction);
 

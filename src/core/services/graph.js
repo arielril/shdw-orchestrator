@@ -12,7 +12,17 @@ class Graph {
   }
 
   async get() {
-    return this._flowchartRepository.getGraph();
+    const graph = await this._flowchartRepository.getGraph();
+
+    const nodes = graph.nodes.map((nd) => ({
+      ...nd,
+      id: nd.uid,
+    }));
+
+    return {
+      nodes,
+      links: graph.edges,
+    };
   }
 }
 

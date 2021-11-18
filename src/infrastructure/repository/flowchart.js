@@ -136,7 +136,7 @@ class FlowChart {
 
   async getGraph() {
     try {
-      const resp = await axios.default.get(`${this.baseUrl}/v1/graph`);
+      const resp = await axios.default.get(`${this.baseUrl}/graph`);
       Logger.info({ graph: resp.data }, 'got graph');
       return resp.data;
     } catch (error) {

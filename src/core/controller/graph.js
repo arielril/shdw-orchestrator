@@ -1,5 +1,5 @@
 const { StatusCodes } = require('http-status-codes');
-const Graph = require('../services/graph');
+const { Graph } = require('../services/graph');
 
 /**
  * @param {import('express').Request} req 
@@ -12,7 +12,10 @@ const getGraph = async (req, res, next) => {
 
     const graph = await graphService.get();
 
-    return res.status(StatusCodes.OK).json(graph);
+    return res
+      .setHeader('Access-Control-Allow-Origin', '*')
+      .status(StatusCodes.OK)
+      .json(graph);
   } catch (error) {
     next(error);
   }
